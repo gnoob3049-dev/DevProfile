@@ -143,6 +143,30 @@ html:not(.dark) .dev-dark {
   color: white;
 }
 
+/* Light mode: adjust scrollbar for light backgrounds */
+html:not(.dark) ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Light mode: dot grid uses dark dots */
+html:not(.dark) .dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+}
+
+/* Light mode: contribution chart uses green color natively */
+html:not(.dark) .contribution-chart img {
+  filter: none;
+}
+
+/* Light mode: glassmorphism adapts */
+html:not(.dark) .glass {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
 /* Smooth transitions for theme changes */
 * {
   transition-property: background-color, border-color;
@@ -172,4 +196,35 @@ html:not(.dark) .dev-dark {
 
 .animate-glow {
   animation: gradient-shift 4s ease-in-out infinite;
+}
+
+/* Animated dot grid background */
+@keyframes dot-grid-drift {
+  0% { background-position: 0 0; }
+  100% { background-position: 24px 24px; }
+}
+
+.dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  animation: dot-grid-drift 20s linear infinite;
+}
+
+/* Floating pulse animation for CTA */
+@keyframes float-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 10px 30px -5px rgba(34, 197, 94, 0.25); }
+  50% { transform: scale(1.03); box-shadow: 0 15px 40px -5px rgba(34, 197, 94, 0.35); }
+}
+
+.float-pulse {
+  animation: float-pulse 3s ease-in-out infinite;
+}
+
+/* Hover glow for step cards */
+.step-card-glow {
+  transition: all 0.3s ease;
+}
+.step-card-glow:hover {
+  border-color: rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.1), 0 0 60px rgba(34, 197, 94, 0.05);
 }

@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
+import { SectionHeader } from './SectionHeader';
 
 const COLORS = [
   '#22c55e', '#3b82f6', '#a855f7', '#f97316', '#eab308',
@@ -37,7 +38,7 @@ export function LanguageChart({ languages }: Props) {
       animate={{ opacity: 1, y: 0 }}
       className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-5"
     >
-      <h3 className="text-sm font-semibold text-white mb-4">Top Languages</h3>
+      <SectionHeader>Languages</SectionHeader>
       <ResponsiveContainer width="100%" height={220}>
         <BarChart layout="vertical" data={data} margin={{ left: 0, right: 20, top: 0, bottom: 0 }}>
           <XAxis type="number" hide />

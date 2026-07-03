@@ -52,7 +52,7 @@ export async function GET(
   try {
     const { githubUsername } = await params;
 
-    const cached = getCached<ReturnType<typeof buildResponse>>(githubUsername);
+    const cached = getCached<Record<string, unknown>>(githubUsername);
     if (cached) {
       return NextResponse.json(cached);
     }

@@ -35,7 +35,7 @@ const pageVariants = {
 };
 
 export default function Home() {
-  const { currentPage, token } = useAppStore();
+  const { currentPage, token, navigate } = useAppStore();
 
   // Validate auth on mount
   useEffect(() => {
@@ -45,6 +45,17 @@ export default function Home() {
       });
     }
   }, []);
+
+  // Deep linking: ?u=username navigates to public profile
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const username = params.get('u');
+    if (username) {
+      navigate('public-profile', { username });
+      // Clean the URL without reloading
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [navigate]);
 
   const PageComponent = pages[currentPage] || LandingPage;
 

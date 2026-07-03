@@ -27,7 +27,7 @@ export interface GitHubData {
     description: string | null;
     language: string | null;
     stargazers_count: number;
-    fork: boolean;
+    forks_count: number;
   }[];
   languages: { [lang: string]: number };
 }

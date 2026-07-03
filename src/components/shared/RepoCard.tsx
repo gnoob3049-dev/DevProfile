@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Star, ExternalLink } from 'lucide-react';
+import { Star, GitFork, ExternalLink } from 'lucide-react';
 
 const langColors: Record<string, string> = {
   TypeScript: '#3178c6',
@@ -32,6 +32,7 @@ interface Props {
     description: string | null;
     language: string | null;
     stargazers_count: number;
+    forks_count: number;
   };
   index: number;
 }
@@ -57,12 +58,20 @@ export function RepoCard({ repo, index }: Props) {
             <p className="text-xs text-gray-400 mt-1 line-clamp-2">{repo.description}</p>
           )}
         </div>
-        {repo.stargazers_count > 0 && (
-          <div className="flex items-center gap-1 text-yellow-400 shrink-0">
-            <Star className="size-3.5 fill-current" />
-            <span className="text-xs font-medium">{repo.stargazers_count}</span>
-          </div>
-        )}
+        <div className="flex items-center gap-3 shrink-0">
+          {repo.forks_count > 0 && (
+            <div className="flex items-center gap-1 text-gray-400">
+              <GitFork className="size-3" />
+              <span className="text-xs">{repo.forks_count}</span>
+            </div>
+          )}
+          {repo.stargazers_count > 0 && (
+            <div className="flex items-center gap-1 text-yellow-400">
+              <Star className="size-3.5 fill-current" />
+              <span className="text-xs font-medium">{repo.stargazers_count}</span>
+            </div>
+          )}
+        </div>
       </div>
       {repo.language && (
         <div className="flex items-center gap-2 mt-2">

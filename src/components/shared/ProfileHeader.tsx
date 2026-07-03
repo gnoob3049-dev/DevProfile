@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Users, Share2, Briefcase, Edit2 } from 'lucide-react';
+import { MapPin, Users, Share2, Briefcase, Edit2, ExternalLink } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -76,8 +76,9 @@ export function ProfileHeader({ profile, name, isOwn }: Props) {
 
   const handleShare = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
-      toast({ title: 'Link copied to clipboard!' });
+      const shareUrl = `${window.location.origin}/?u=${profile.username}`;
+      await navigator.clipboard.writeText(shareUrl);
+      toast({ title: 'Profile link copied to clipboard!' });
     } catch {
       toast({ title: 'Failed to copy link', variant: 'destructive' });
     }
@@ -101,7 +102,20 @@ export function ProfileHeader({ profile, name, isOwn }: Props) {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div>
               <h1 className="text-2xl font-bold text-white">{name}</h1>
-              <p className="text-gray-400 text-sm">@{profile.username}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-gray-400 text-sm">@{profile.username}</p>
+                {profile.githubUsername && (
+                  <a
+                    href={`https://github.com/${profile.githubUsername}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-green-400 transition-colors"
+                  >
+                    <ExternalLink className="size-3" />
+                    View on GitHub
+                  </a>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-2 sm:ml-auto">
               {isOwn && (

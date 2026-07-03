@@ -32,13 +32,14 @@ export const api = {
   getGitHubData: (githubUsername: string) => apiFetch(`/api/github/${githubUsername}`),
 
   // developers
-  getDevelopers: (params?: { skill?: string; search?: string; lookingFor?: string; page?: number; limit?: number }) => {
+  getDevelopers: (params?: { skill?: string; search?: string; lookingFor?: string; page?: number; limit?: number; sort?: string }) => {
     const searchParams = new URLSearchParams();
     if (params?.skill) searchParams.set('skill', params.skill);
     if (params?.search) searchParams.set('search', params.search);
     if (params?.lookingFor) searchParams.set('lookingFor', params.lookingFor);
     if (params?.page) searchParams.set('page', String(params.page));
     if (params?.limit) searchParams.set('limit', String(params.limit));
+    if (params?.sort) searchParams.set('sort', params.sort);
     const qs = searchParams.toString();
     return apiFetch(`/api/developers${qs ? `?${qs}` : ''}`);
   },

@@ -6,6 +6,7 @@ import { ThumbsUp, Check } from 'lucide-react';
 import { useAppStore } from '@/store/app-store';
 import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
+import { SectionHeader } from './SectionHeader';
 import type { ProfileData } from '@/store/app-store';
 
 interface Props {
@@ -49,7 +50,7 @@ export function EndorsementsSection({ endorsements, profileUserId }: Props) {
       animate={{ opacity: 1, y: 0 }}
       className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-5"
     >
-      <h3 className="text-sm font-semibold text-white mb-4">Endorsements</h3>
+      <SectionHeader>Endorsements</SectionHeader>
       <div className="flex flex-wrap gap-2">
         {items.map((item) => {
           const canEndorse = token && !isOwn && !item.endorsedByMe;

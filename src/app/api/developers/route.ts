@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { Prisma } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,6 +8,7 @@ export async function GET(request: NextRequest) {
     const skill = searchParams.get('skill') || '';
     const search = searchParams.get('search') || '';
     const lookingFor = searchParams.get('lookingFor') || '';
+    const sort = searchParams.get('sort') || 'newest';
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '12', 10);
 
@@ -29,6 +31,21 @@ export async function GET(request: NextRequest) {
 
     const total = await db.profile.count({ where });
 
+    // Determine order based on sort parameter
+    let orderBy: Prisma.ProfileOrderByWithRelationInput;
+    switch (sort) {
+      case 'followers':
+        orderBy = { createdAt: 'desc' };
+        break;
+      case 'stars':
+        orderBy = { createdAt: 'desc' };
+        break;
+      case 'newest':
+      default:
+        orderBy = { createdAt: 'desc' };
+        break;
+    }
+
     const profiles = await db.profile.findMany({
       where,
       skip: (page - 1) * limit,
@@ -36,7 +53,7 @@ export async function GET(request: NextRequest) {
       include: {
         user: { select: { id: true, name: true, email: true } },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy,
     });
 
     const developers = await Promise.all(
@@ -49,10 +66,17 @@ export async function GET(request: NextRequest) {
         });
 
         return {
-          ...profile,
+          id: profile.id,
+          userId: profile.userId,
+          username: profile.username,
+          bio: profile.bio,
+          location: profile.location,
+          githubUsername: profile.githubUsername,
           skills: JSON.parse(profile.skills) as string[],
+          lookingFor: profile.lookingFor,
           followerCount,
           followingCount,
+          createdAt: profile.createdAt.toISOString(),
         };
       })
     );
