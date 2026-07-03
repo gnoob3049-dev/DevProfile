@@ -224,3 +224,80 @@ The project is stable and feature-complete for core functionality. All APIs work
 5. **Add empty state illustrations** — SVG illustrations for empty explore, no followers, etc.
 6. **Add profile URL deep linking** — Support ?u=username query param for direct profile links
 7. **Add "Edit Profile" from onboarding** — Allow revisiting onboarding to add GitHub/skills later
+---
+Task ID: 7
+Agent: Review & Iteration (Cron Review #2)
+Task: QA testing, bug fixes, new features, and styling improvements
+
+Work Log:
+- **Bug Fix: FollowingPage auth** — FollowingPage used raw `fetch()` without JWT for followers/following endpoints. Fixed by adding `getFollowers()` and `getFollowing()` methods to api.ts client (auto-attaches token) and updating FollowingPage to use them. Also improved back navigation (returns to profile page instead of landing).
+- **Bug Fix: Search filter state sync** — ExplorePage's `clearAll` and `clearFilter` functions only cleared the debounced `search` state, not the `searchInput` displayed value. Fixed by clearing both.
+- **New Feature: Activity Feed** — Created `/api/activity/[userId]` API route that queries Follow and Endorsement records for a user, merges them sorted by date. Created `ActivityFeed.tsx` component with avatar, icon badges (UserPlus for follows, Award for endorsements), relative timestamps, and clickable actor profiles. Added to both MyProfilePage and PublicProfilePage sidebars.
+- **New Feature: GitHub README Viewer** — Created `/api/readme/[githubUsername]` API route that fetches the top repo's README from GitHub API with 5-min cache. Created `ReadmeViewer.tsx` component using `react-markdown` with fully custom dark-themed rendering (code blocks, tables, blockquotes, links, images). Supports truncation with "Read full README" expand. Added to both profile pages after contribution heatmap.
+- **New Component: EmptyState** — Created reusable `EmptyState.tsx` with animated icon container, glow ring, decorative dots, title/description, and optional action button. Updated ExplorePage to use it for no-results state.
+- **Styling: Login/Register Enhancement** — Both pages now have: background glow orbs, gradient top-line accent on form cards, animated icon header (Code2/Shield in green glass container), field focus glow effect (`shadow-[0_0_20px_rgba(34,197,94,0.08)]`), animated error messages, loading spinners instead of text, "or" divider, bottom tagline with sparkle icon, arrow icons on CTA buttons.
+- **Styling: Onboarding Multi-Step** — Completely rewrote OnboardingPage with 4-step wizard: (1) Basics (username + location), (2) Details (bio with char counter), (3) GitHub (with live avatar preview), (4) Skills & Looking For. Features: horizontal step indicator with connecting lines, step completion checkmarks, animated step transitions (AnimatePresence), looking-for cards with emoji icons and descriptions, GitHub username input with sanitization, back/continue navigation, skip hint.
+- **Styling: Enhanced Footer** — Rewrote from 2-line footer to 4-column layout: brand column with logo/description/social icon buttons, 3 link columns (Platform, Features, Resources), bottom bar with heart icon copyright. All links use Zustand navigate().
+- **Styling: Enhanced FollowingPage** — Improved with: header icon in green glass container, count subtitle, staggered list animations, avatar ring hover effect, name hover-to-green, bio preview on desktop, spinner loading for follow buttons, empty state with illustration and "Explore Developers" CTA, improved back button with arrow animation.
+- **Styling: Improved ExplorePage Loading** — Replaced flat skeleton rectangles with detailed card-shaped skeletons matching DeveloperCard layout (avatar, name, username, bio lines, skill chips, follower count, follow button). Added staggered fade-in animation.
+- **Styling: Profile Header Follow Button** — Added spinner loading state, min-width for stable sizing, hover shadow/glow on follow button, hover border-color on unfollow.
+- **Styling: Profile Follower/Following Counts** — Made numbers bold (font-medium) and changed hover color to green for better interactivity indication.
+- **Feature: Search Debouncing** — Added 300ms debounce to ExplorePage search input to reduce API calls during typing. Uses local `searchInput` state synced to debounced `search` state.
+
+Stage Summary:
+- 1 bug fixed (FollowingPage auth token), 1 bug fixed (search filter state sync)
+- 2 new API routes: /api/activity/[userId], /api/readme/[githubUsername]
+- 3 new shared components: ActivityFeed, ReadmeViewer, EmptyState
+- 6 modified pages: Login, Register, Onboarding, Explore, Following, MyProfile, PublicProfile
+- 3 modified shared components: Footer, ProfileHeader, (activity added to sidebar)
+- 2 new API client methods: getFollowers, getFollowing, getReadme, getActivity
+- All changes pass ESLint with 0 errors, 0 warnings
+
+## Current Project Status (Post-Review #2)
+
+### Assessment
+The project has been significantly enhanced with new features, better UX, and polished styling. The platform now has 15 API routes, 12 shared components, and 9 page components. Key new capabilities: Activity Feed, README Viewer, Multi-step Onboarding.
+
+### Completed in This Round
+- **Activity Feed**: Shows recent follows and endorsements on profile sidebar
+- **README Viewer**: Displays top GitHub repo README with custom dark markdown styling
+- **Multi-step Onboarding**: 4-step wizard with progress indicator (Basics → Details → GitHub → Skills)
+- **Enhanced Auth Pages**: Login/Register with glow effects, animated headers, loading spinners
+- **Empty States**: Reusable EmptyState component with animated icon
+- **Search Debouncing**: 300ms delay on explore search
+- **Enhanced Footer**: 4-column layout with brand, links, social icons
+- **Loading Skeletons**: Card-shaped skeletons matching actual DeveloperCard layout
+- **Follow Button Polish**: Spinner loading, hover glow, stable width
+
+### Files Created
+- `/src/app/api/activity/[userId]/route.ts`
+- `/src/app/api/readme/[githubUsername]/route.ts`
+- `/src/components/shared/ActivityFeed.tsx`
+- `/src/components/shared/ReadmeViewer.tsx`
+- `/src/components/shared/EmptyState.tsx`
+
+### Files Modified
+- `/src/lib/api.ts` — Added getFollowers, getFollowing, getReadme, getActivity
+- `/src/components/pages/FollowingPage.tsx` — Full rewrite with auth, animations, empty state
+- `/src/components/pages/LoginPage.tsx` — Enhanced with glow effects, animated header
+- `/src/components/pages/RegisterPage.tsx` — Enhanced with glow effects, animated header
+- `/src/components/pages/OnboardingPage.tsx` — Full rewrite as 4-step wizard
+- `/src/components/pages/ExplorePage.tsx` — Search debounce, better skeletons, EmptyState
+- `/src/components/pages/MyProfilePage.tsx` — Added ActivityFeed + ReadmeViewer
+- `/src/components/pages/PublicProfilePage.tsx` — Added ActivityFeed + ReadmeViewer
+- `/src/components/shared/Footer.tsx` — Full rewrite with 4-column layout
+- `/src/components/shared/ProfileHeader.tsx` — Better follow button, green hover counts
+
+### Unresolved Issues / Risks
+1. **Dev server stability in sandbox** — Turbopack memory usage can cause OOM. Not a code issue.
+2. **GitHub API rate limiting** — Returns 403 when rate-limited. Could add graceful error UI.
+3. **Light mode** — Dark mode is primary; light mode works but uses default shadcn colors. Components still use hardcoded dark colors (#0a0a0a, text-white).
+4. **No notification bell in navbar** — Activity feed exists on profile but no global notification indicator.
+
+### Priority Recommendations for Next Phase
+1. **Add notification bell in Navbar** — Show unread activity count badge
+2. **Light mode polish** — Make all components properly theme-aware
+3. **GitHub error states** — Graceful UI when GitHub API is rate-limited or user not found
+4. **Profile URL sharing** — Add "Copy link" confirmation with username
+5. **Infinite scroll** — Replace pagination buttons with infinite scroll on Explore page
+6. **Add "Back to profile" on Following page** — Already partially done, could track referrer username

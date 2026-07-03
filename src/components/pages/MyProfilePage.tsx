@@ -13,6 +13,8 @@ import { LanguageChart } from '@/components/shared/LanguageChart';
 import { EndorsementsSection } from '@/components/shared/EndorsementsSection';
 import { QuickInfoSidebar } from '@/components/shared/QuickInfoSidebar';
 import { SectionHeader } from '@/components/shared/SectionHeader';
+import { ActivityFeed } from '@/components/shared/ActivityFeed';
+import { ReadmeViewer } from '@/components/shared/ReadmeViewer';
 
 export function MyProfilePage() {
   const { user, setProfile, setGitHubData, navigate } = useAppStore();
@@ -103,14 +105,19 @@ export function MyProfilePage() {
             </motion.div>
           )}
 
+          {profile.githubUsername && (
+            <ReadmeViewer githubUsername={profile.githubUsername} />
+          )}
+
           {profile.endorsements && profile.endorsements.length > 0 && (
             <EndorsementsSection endorsements={profile.endorsements} profileUserId={profile.userId} />
           )}
         </div>
 
         {/* Right column - 1/3 sidebar */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 space-y-6">
           <QuickInfoSidebar profile={profile} />
+          <ActivityFeed userId={profile.userId} />
         </div>
       </div>
     </div>

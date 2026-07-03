@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Search, SlidersHorizontal, X, ArrowUpDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { api } from '@/lib/api';
 import { DeveloperCard } from '@/components/shared/DeveloperCard';
+import { EmptyState } from '@/components/shared/EmptyState';
+import { Search } from 'lucide-react';
 
 const ALL_SKILLS = [
   'React', 'Node.js', 'Python', 'TypeScript', 'JavaScript', 'Go', 'Rust', 'Java',
@@ -43,6 +45,17 @@ export function ExplorePage() {
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const [searchInput, setSearchInput] = useState(search);
+
+  // Debounced search
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setSearch(searchInput);
+    }, 300);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [searchInput]);
 
   const fetchDevelopers = useCallback(async () => {
     setLoading(true);
@@ -81,12 +94,13 @@ export function ExplorePage() {
   if (lookingFor) activeFilters.push({ key: 'lookingFor', label: `Looking for: ${LOOKING_FOR_LABELS[lookingFor] || lookingFor}` });
 
   const clearFilter = (key: string) => {
-    if (key === 'search') setSearch('');
+    if (key === 'search') { setSearchInput(''); setSearch(''); }
     if (key === 'skill') setSkill('');
     if (key === 'lookingFor') setLookingFor('');
   };
 
   const clearAll = () => {
+    setSearchInput('');
     setSearch('');
     setSkill('');
     setLookingFor('');
@@ -110,8 +124,8 @@ export function ExplorePage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-500" />
             <Input
               placeholder="Search developers..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-green-500/50 pl-10 h-10"
             />
           </div>
@@ -196,13 +210,51 @@ export function ExplorePage() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-52 rounded-2xl bg-white/5" />
+              <motion.div
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: i * 0.05 }}
+                className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3"
+              >
+                <div className="flex items-start gap-3">
+                  <Skeleton className="size-12 rounded-full bg-white/5 shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-24 rounded bg-white/5" />
+                    <Skeleton className="h-3 w-16 rounded bg-white/5" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Skeleton className="h-3 w-full rounded bg-white/5" />
+                  <Skeleton className="h-3 w-3/4 rounded bg-white/5" />
+                </div>
+                <div className="flex gap-1.5">
+                  <Skeleton className="h-5 w-14 rounded-full bg-white/5" />
+                  <Skeleton className="h-5 w-16 rounded-full bg-white/5" />
+                  <Skeleton className="h-5 w-12 rounded-full bg-white/5" />
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <Skeleton className="h-3 w-20 rounded bg-white/5" />
+                  <Skeleton className="h-7 w-16 rounded-lg bg-white/5" />
+                </div>
+              </motion.div>
             ))}
           </div>
         ) : developers.length === 0 ? (
-          <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-12 text-center">
-            <p className="text-gray-400">No developers found. Try different filters.</p>
-          </div>
+          <EmptyState
+            icon={Search}
+            title="No developers found"
+            description={hasFilters
+              ? 'Try adjusting your search terms or filters to find developers.'
+              : 'Be the first to join the community and create your developer profile!'}
+            actionLabel={!hasFilters ? 'Create Your Profile' : undefined}
+            onAction={!hasFilters ? () => {
+              const { token, profile: p } = useAppStore.getState();
+              if (token && p) useAppStore.getState().navigate('my-profile');
+              else if (token) useAppStore.getState().navigate('onboarding');
+              else useAppStore.getState().navigate('register');
+            } : undefined}
+          />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {developers.map((dev) => (

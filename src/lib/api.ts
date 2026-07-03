@@ -30,6 +30,7 @@ export const api = {
 
   // github
   getGitHubData: (githubUsername: string) => apiFetch(`/api/github/${githubUsername}`),
+  getReadme: (githubUsername: string) => apiFetch(`/api/readme/${githubUsername}`),
 
   // developers
   getDevelopers: (params?: { skill?: string; search?: string; lookingFor?: string; page?: number; limit?: number; sort?: string }) => {
@@ -47,7 +48,12 @@ export const api = {
   // follow
   follow: (userId: string) => apiFetch(`/api/follow/${userId}`, { method: 'POST' }),
   unfollow: (userId: string) => apiFetch(`/api/follow/${userId}`, { method: 'DELETE' }),
+  getFollowers: (userId: string) => apiFetch(`/api/follow/${userId}/followers`),
+  getFollowing: (userId: string) => apiFetch(`/api/follow/${userId}/following`),
 
   // endorse
   endorse: (userId: string, skill: string) => apiFetch(`/api/endorse/${userId}/${encodeURIComponent(skill)}`, { method: 'POST' }),
+
+  // activity
+  getActivity: (userId: string) => apiFetch(`/api/activity/${userId}`),
 };

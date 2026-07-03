@@ -136,12 +136,19 @@ export function ProfileHeader({ profile, name, isOwn }: Props) {
                   disabled={loading}
                   onClick={handleFollow}
                   className={cn(
+                    'min-w-[80px] transition-all duration-200',
                     following
-                      ? 'border-white/10 text-gray-400 hover:text-red-400'
-                      : 'bg-green-500 hover:bg-green-600 text-white'
+                      ? 'border-white/10 text-gray-400 hover:text-red-400 hover:border-red-500/30'
+                      : 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/20'
                   )}
                 >
-                  {following ? 'Following' : 'Follow'}
+                  {loading ? (
+                    <span className="inline-block size-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  ) : following ? (
+                    'Following'
+                  ) : (
+                    'Follow'
+                  )}
                 </Button>
               )}
               <Button
@@ -165,18 +172,20 @@ export function ProfileHeader({ profile, name, isOwn }: Props) {
               </div>
             )}
             <button
-              onClick={() => navigate('following', { userId: profile.userId, type: 'followers' })}
-              className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors"
+              onClick={() => navigate('following', { userId: profile.userId, type: 'followers', from: isOwn ? 'my-profile' : 'public-profile' })}
+              className="flex items-center gap-1.5 text-gray-400 hover:text-green-400 transition-colors"
             >
               <Users className="size-3.5" />
-              <span className="text-sm">{profile.followerCount} followers</span>
+              <span className="text-sm font-medium">{profile.followerCount}</span>
+              <span className="text-sm">followers</span>
             </button>
             <button
-              onClick={() => navigate('following', { userId: profile.userId, type: 'following' })}
-              className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors"
+              onClick={() => navigate('following', { userId: profile.userId, type: 'following', from: isOwn ? 'my-profile' : 'public-profile' })}
+              className="flex items-center gap-1.5 text-gray-400 hover:text-green-400 transition-colors"
             >
               <Users className="size-3.5" />
-              <span className="text-sm">{profile.followingCount} following</span>
+              <span className="text-sm font-medium">{profile.followingCount}</span>
+              <span className="text-sm">following</span>
             </button>
           </div>
 
