@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  profile   Profile?
+}
+
+model Profile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  username      String   @unique
+  bio           String   @default("")
+  location      String   @default("")
+  githubUsername String  @default("")
+  skills        String   @default("[]")
+  lookingFor    String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endorsements  Endorsement[]
+  followers     Follow[] @relation("Follows")
+  following     Follow[] @relation("Followed")
+}
+
+model Follow {
+  id           String   @id @default(cuid())
+  followerId   String
+  followingId  String
+  createdAt    DateTime @default(now())
+  follower     Profile  @relation("Follows", fields: [followerId], references: [id], onDelete: Cascade)
+  following    Profile  @relation("Followed", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+}
+
+model Endorsement {
+  id         String   @id @default(cuid())
+  profileId  String
+  skill      String
+  endorsedBy String
+  createdAt  DateTime @default(now())
+  profile    Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, skill, endorsedBy])
+}
