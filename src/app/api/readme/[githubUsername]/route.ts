@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getFromCache, setCache } from '@/lib/github-cache';
+import { getCached, setCache } from '@/lib/github-cache';
 
 export async function GET(
   request: Request,
@@ -8,7 +8,7 @@ export async function GET(
   try {
     const { githubUsername } = await params;
     const cacheKey = `readme-${githubUsername}`;
-    const cached = getFromCache(cacheKey);
+    const cached = getCached(cacheKey);
     if (cached) return NextResponse.json(cached);
 
     const res = await fetch(
