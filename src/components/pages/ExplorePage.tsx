@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { api } from '@/lib/api';
 import { DeveloperCard } from '@/components/shared/DeveloperCard';
 import { EmptyState } from '@/components/shared/EmptyState';
-import { Search } from 'lucide-react';
 
 const ALL_SKILLS = [
   'React', 'Node.js', 'Python', 'TypeScript', 'JavaScript', 'Go', 'Rust', 'Java',
