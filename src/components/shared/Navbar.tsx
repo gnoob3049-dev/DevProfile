@@ -1,16 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sun, Moon, Code2 } from 'lucide-react';
+import { Menu, X, Code2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/app-store';
 import { cn } from '@/lib/utils';
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
   const { currentPage, navigate, token, user, logout } = useAppStore();
 
   const navLink = (page: string, label: string) => (
@@ -72,19 +70,8 @@ export function Navbar() {
               {links}
             </nav>
 
-            {/* Right side: theme toggle + mobile menu */}
+            {/* Mobile hamburger */}
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="text-gray-400 hover:text-white"
-              >
-                <Sun className="size-4 dark:hidden" />
-                <Moon className="size-4 hidden dark:block" />
-              </Button>
-
-              {/* Mobile hamburger */}
               <Button
                 variant="ghost"
                 size="icon"
